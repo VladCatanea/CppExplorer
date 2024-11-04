@@ -1,35 +1,41 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <filesystem> // Include the filesystem library
 
 #define FILENAME "students.txt"
 #define MAX_STUDENTS 50
 
 using namespace std;
+namespace fs = std::filesystem; // Alias for easier usage
 
 class StudentList{
     private:
     char* students[MAX_STUDENTS];
 
     public:
+
+    StudentList(){
+    }
+
+    ~StudentList(){}
+
     void init(string filename){
         ifstream file (filename);
         string buffer;
         char* student_name;
         int i = 0;
 
-        cout << "File open success?: " << file.is_open() << endl;
+        cout << "Current directory: " << fs::current_path() << endl;
 
         if(file.is_open()){
 
             while(getline(file, buffer) && i < MAX_STUDENTS){
-                cout << "Reading line " << i << endl;
                 student_name = new char[buffer.size()];
                 buffer.copy(student_name, buffer.size());
                 students[i] = student_name;
                 i++;
             }
-            cout << "end: " << i << endl;
             students[i] = NULL;
             file.close();
         }
@@ -39,7 +45,6 @@ class StudentList{
     };
 
     void print(){
-        cout << students[0];
         for(int i = 0; students[i] != NULL; i++){
             cout << students[i] << endl;
         }
