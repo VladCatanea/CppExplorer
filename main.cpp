@@ -6,6 +6,7 @@
 
 #define FILENAME "students.txt"
 #define MAX_STUDENTS 50
+#define STUDENT_NAME "Zhang, Xiu Ying"
 
 using namespace std;
 namespace fs = std::filesystem; // Alias for easier usage
@@ -66,7 +67,7 @@ class StudentList{
         if(file.is_open()){
 
             while(getline(file, buffer) && i < MAX_STUDENTS){
-                student_name = new char[buffer.size()];
+                student_name = new char[buffer.size() + 1]{0};
                 buffer.copy(student_name, buffer.size());
                 students[i] = student_name;
                 i++;
@@ -79,7 +80,6 @@ class StudentList{
     };
 
     void sort(){
-        cout << "sort" << endl;
         int swapped;
         do
         {
@@ -102,7 +102,29 @@ class StudentList{
     };
 
     char* find_student_name(char* student_name){
-        return student_name;
+        int max, min = 0;
+        for(max = 0; students[max] != NULL; max++);
+        max--;
+        while(max > min)
+        {
+            int compare_result = compare(students[(max + min)/2], student_name);
+            int test = (max + min)/2;
+            if(compare_result == 0){
+                return student_name;
+            }
+            if(compare_result == 1){
+                max = (max + min)/2 - 1;
+            }
+            else{
+                min = (max + min)/2 + 1;
+            }
+        }
+
+        if(compare(students[max], student_name) == 0){
+            return student_name;
+        }
+
+        return "Student not found";
     }
 };
 
@@ -113,8 +135,19 @@ int main()
     
     StudentList student_list = StudentList();
     student_list.init(FILENAME);
-    student_list.sort();
+    cout << "Unsorted student list: " << endl;
     student_list.print();
+    cout << endl;
+    student_list.sort();
+    cout << "Sorted student list: " << endl;
+    student_list.print();
+    cout << endl;
+
+    cout << "Search for student: " << endl;
+    char* student_name;
+    student_name = new char[strlen(STUDENT_NAME) + 1]{0};
+    memcpy(student_name, STUDENT_NAME, strlen(STUDENT_NAME));
+    cout << student_list.find_student_name(student_name) << endl;
 
     // delete student_list;
     return 0;
